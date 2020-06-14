@@ -12,10 +12,17 @@
 
 #define true 1
 
+
+
+void Sleep_Wait(int num)
+{
+    for (int i = 0; i < num*10000; i++)
+        for (int i = 0; i < num*10000; i++) {}   
+}
+
+
+
 sem_t Waiting_Room;
-// sem_t DW_1;
-// sem_t DW_2;
-// sem_t Bill;
 sem_t Dealing[3];
  
 char Deposit_String[] = {"Deposit"};
@@ -43,17 +50,15 @@ void Deposit_Withdraw_1(struct Customer_Info *Customer_ID)
     if (Customer_ID->Purpose == 'd')
     {
         p = &Deposit_String[0];
-        // Deposit_Customers--;
     }
     else
     {
         p = &Withdraw_String[0];
-        // Withdraw_Customers--;
     }
 
     printf("Customer with ID %d have reached Deposit/Withdraw Counter 1 for the purpose of %s\n" , Customer_ID->ID , p);
     printf("Customer with ID %d %sing the money\n", Customer_ID->ID , p);
-    sleep(5);
+    Sleep_Wait(5);
     printf("Customer with ID %d %sed the money\n", Customer_ID->ID , p);
     sem_post(&Dealing[0]);
 
@@ -68,17 +73,15 @@ void Deposit_Withdraw_2(struct Customer_Info *Customer_ID)
     if (Customer_ID->Purpose == 'd')
     {
         p = &Deposit_String[0];
-        // Deposit_Customers--;
     }
     else
     {
         p = &Withdraw_String[0];
-        // Withdraw_Customers--;
     }
 
     printf("Customer with ID %d have reached Deposit/Withdraw Counter 2 for the purpose of %s\n" , Customer_ID->ID , p);
     printf("Customer with ID %d %sing the money\n", Customer_ID->ID , p);
-    sleep(5);
+    Sleep_Wait(5);
     printf("Customer with ID %d %sed the money\n", Customer_ID->ID , p);
     sem_post(&Dealing[1]);
 
@@ -91,7 +94,7 @@ void Billing(struct Customer_Info *Customer_ID)
     sem_wait(&Dealing[2]);
     printf("Customer with ID %d have reached Billing Counter 2 to pay Bills\n" , Customer_ID->ID);
     printf("Customer with ID %d Paying Bill\n", Customer_ID->ID );
-    sleep(5);
+    Sleep_Wait(5);
     printf("Customer with ID %d Payed the Bill\n", Customer_ID->ID);
     sem_post(&Dealing[2]);
 
@@ -102,11 +105,11 @@ void Billing(struct Customer_Info *Customer_ID)
 void* Customers(void *Customer_ID)
 {
     struct Customer_Info *I = (struct Customer_Info *)Customer_ID;
-    sleep(rand() % 3);
+    Sleep_Wait(rand() % 3);
     printf("Customer with ID %d Reached the Bank\n" , I->ID);
     int value; 
     sem_getvalue(&Waiting_Room, &value);
-    sleep(1);
+    Sleep_Wait(1);
     
     if (value <= 0)
     {
@@ -169,10 +172,6 @@ int main()
     srand(time(0)); 
     
     sem_init(&Waiting_Room, 0, Waiting_Chairs);
-    
-    // sem_init(&DW_1, 0, 0);
-    // sem_init(&DW_2, 0, 0);
-    // sem_init(&Bill, 0, 0);
     
     sem_init(&Dealing[0], 0, 1);
     sem_init(&Dealing[1], 0, 1);
